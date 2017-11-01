@@ -26,6 +26,7 @@ namespace TicTacToe
 			InitializeComponent();
 		}
 
+		#region PlayerOptions
 		private void optionOnePlayer_Click(object sender, EventArgs e)
 		{
 			if(!this.optionOnePlayer.Checked)
@@ -43,19 +44,9 @@ namespace TicTacToe
 				this.optionTwoPlayers.Checked = true;
 			}
 		}
+#endregion
 
-		private void btnStart_Click(object sender, EventArgs e)
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				grid[i] = new int[3];
-			}
-
-			DrawGameBoard();
-			ResetBoxes();
-			this.StartGame();
-		}
-
+		#region StartAndReset
 		private void ResetBoxes()
 		{
 			
@@ -71,32 +62,58 @@ namespace TicTacToe
 			{
 				p.Image = null;
 				p.Invalidate();
+				p.Enabled = true;
 			}
 
 		}
 
+		private void btnStart_Click(object sender, EventArgs e)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				grid[i] = new int[3];
+			}
+
+			DrawGameBoard();
+			ResetBoxes();
+			StartGame();
+		}
+
+		private void startGameToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if(btnStart.Enabled)
+			{
+				btnStart_Click(sender, e);
+			}
+			else
+			{
+				MessageBox.Show("Game already in progress.");
+			}
+		}
+
 		private void StartGame()
 		{
-			btnReset.Enabled = true;
-			btnStart.Enabled = false;
 			Boolean twoPlayers = this.optionTwoPlayers.Checked;
 
-			if(!twoPlayers)
+			if (!twoPlayers)
 			{
 				MessageBox.Show("Sorry, we don't have a computer opponent up and running yet!");
 			}
 			else
 			{
+				btnReset.Enabled = true;
+				btnStart.Enabled = false;
+				
 				int goesFirst = ChooseFirstPlayer();
 				if(goesFirst == 1)
 				{
 					playerOneTurn = true;
-					MessageBox.Show("Player one goes first.");
+					MessageBox.Show("Player one goes first.", "Coin Flip");
 				}
 				else
 				{
 					playerOneTurn = false;
-					MessageBox.Show("Player two goes first.");
+					MessageBox.Show("Player two goes first.", "Coin Flip");
 				}
 
 				DisplayPlayerTurn();
@@ -104,6 +121,10 @@ namespace TicTacToe
 
 
 		}
+#endregion
+
+
+
 
 		private void DisplayPlayerTurn()
 		{
@@ -153,6 +174,23 @@ namespace TicTacToe
 			return false;
 		}
 
+		private Boolean CheckForDraw()
+		{
+			Boolean draw = true;
+
+			for(int i = 0; i < 3; i++)
+			{
+				for(int j = 0; j < 3; j++)
+				{
+					if(grid[i][j] < 0)
+					{
+						draw = false;
+					}
+				}
+			}
+			return draw;
+		}
+
 		private void DrawGameBoard()
 		{
 			System.Drawing.Pen boardPen = new System.Drawing.Pen(Color.ForestGreen, 20);
@@ -199,17 +237,17 @@ namespace TicTacToe
 			Close();
 		}
 
-#region pictureBoxClicks
+		#region pictureBoxClicks
 		private void picUL_Click(object sender, EventArgs e)
 		{
-			DrawOnBoard(sender);
 			UpdateGrid(0, 0);
+			DrawOnBoard(sender);
 		}
 
 		private void picUM_Click(object sender, EventArgs e)
 		{
-			DrawOnBoard(sender);
 			UpdateGrid(0, 1);
+			DrawOnBoard(sender);
 		}
 
 		private void picUR_Click(object sender, EventArgs e)
@@ -249,7 +287,6 @@ namespace TicTacToe
 		{
 			UpdateGrid(2, 1);
 			DrawOnBoard(sender);
-
 		}
 
 		private void picLR_Click(object sender, EventArgs e)
@@ -283,20 +320,27 @@ namespace TicTacToe
 				DrawO(sender);
 			}
 
-			if(!CheckForWinner())
-			{
-				NextPlayer();
-			}
-			else
+			if(CheckForWinner())
 			{
 				if(playerOneTurn)
 				{
 					MessageBox.Show("Player One wins! Congratulations!");
+					this.txtOut.Text = "Player One wins!";
 				}
 				else
 				{
 					MessageBox.Show("Player Two wins! Congratulations!");
+					this.txtOut.Text = "Player Two wins!";
 				}
+			}
+			else if(CheckForDraw())
+			{
+				MessageBox.Show("It's a draw!");
+				this.txtOut.Text = "Draw!";
+			}
+			else
+			{
+				NextPlayer();
 			}
 
 			
@@ -312,6 +356,7 @@ namespace TicTacToe
 		{
 			System.Drawing.Pen oPen = new System.Drawing.Pen(Color.Blue, 10);
 			PictureBox toDraw = (PictureBox)sender;
+			toDraw.Enabled = false;
 			g = toDraw.CreateGraphics();
 			g.DrawEllipse(oPen, 8, 8, toDraw.Width - 20, toDraw.Width - 20);
 		}
@@ -320,6 +365,7 @@ namespace TicTacToe
 		{
 			System.Drawing.Pen xPen = new System.Drawing.Pen(Color.Red, 10);
 			PictureBox toDraw = (PictureBox)sender;
+			toDraw.Enabled = false;
 			g = toDraw.CreateGraphics();
 			g.DrawLine(xPen, 10, 10, toDraw.Width-20, toDraw.Width - 20);
 			g.DrawLine(xPen, 10, toDraw.Width - 20, toDraw.Width - 20, 10);
@@ -332,6 +378,16 @@ namespace TicTacToe
 			ResetBoxes();
 			btnReset.Enabled = false;
 			btnStart.Enabled = true;
+		}
+
+		private void howToPlayToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("The game is Tic Tac Toe, the goal is three in a row.\nPlayer One - X\nPlayer Two - O\nPlayers alternate placing X's and O's, and if somebody gets 3 in a row, they win.");
+		}
+
+		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("Created by Alex McCanna for CSCD 371 at EWU.");
 		}
 	}
 	
