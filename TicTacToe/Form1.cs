@@ -8,7 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+/*
+ * Tic Tac Toe
+ * Alex McCanna
+ * CSCD 371
+ * This can be played as single player or two player
+ * Single player computer is pretty basic, and will occasionally make a good play but is "dumb" for the most part
+ * 
+ */
 namespace TicTacToe
 {
 	public partial class Form1 : Form
@@ -154,7 +161,11 @@ namespace TicTacToe
 		 */
 		private void ComputerTurn()
 		{
-
+			if (picMM.Enabled)
+			{
+				picMM_Click(picMM, null);
+				return;
+			}
 			for (int i = 0; i < 3; i++)
 			{
 				//First check is to see if any columns are going to be filled by either person. Will block or win
@@ -308,11 +319,7 @@ namespace TicTacToe
 			//Everything above is the "smart" decision making. Everything below here will be the straight brute force stuff.
 			//Even uglier if you can believe it
 
-			if(picMM.Enabled)
-			{
-				picMM_Click(picMM, null);
-				return;
-			}
+			
 			if(picUL.Enabled)
 			{
 				picUL_Click(picUL, null);
@@ -595,7 +602,9 @@ namespace TicTacToe
 
 		private void howToPlayToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show("The game is Tic Tac Toe, the goal is three in a row.\nPlayer One - X\nPlayer Two - O\nPlayers alternate placing X's and O's, and if somebody gets 3 in a row, they win.");
+			MessageBox.Show("The game is Tic Tac Toe, the goal is three in a row.\nPlayer One - X\nPlayer Two - O\n" +
+							"Players alternate placing X's and O's, and if somebody gets 3 in a row, they win.\n" +
+							"If Start is greyed out, press Reset to be able to start a new game.");
 		}
 
 		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
